@@ -4,7 +4,7 @@ implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
 public class ApiClient {
 
-    private static String BASE_URL = "http://services.i2i.live/1.3/";
+    private static String BASE_URL = "https://lochawala.com/foodplus/api/public/index.php/v1/";
     private static Retrofit retrofit = null;
 
     public static Retrofit getRetrofitClient(Context context) {
@@ -27,6 +27,11 @@ public interface ApiInterface {
 
     @POST("register.php")
     Call<ResponseBody> registerUser(@Body RequestBody body);
+    
+    
+    @Headers("Content-Type: application/json")
+    @POST("register")
+    Call<ResponseBody> registerUser(@Body String body);
     
  }
 
