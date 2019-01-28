@@ -130,3 +130,104 @@ mApiService = ApiClient.getRetrofitClient(SplashActivity.this).create(ApiInterfa
         
         
         *****************************************************************************************************************
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        private void _callApiLogin() {
+        try {
+            Common.showProgress(context, "Please wait");
+
+            if (mApiService != null) {
+
+                String userId = "";
+                if (!PrefUtil.getstringPref(getString(R.string.pref_unique_id), context).equals("") && PrefUtil.getstringPref(getString(R.string.pref_unique_id), context) != null) {
+                    userId = PrefUtil.getstringPref(getString(R.string.pref_unique_id), context);
+                } else {
+                    userId = "4444444444";
+                }
+                JSONObject paramObject = new JSONObject();
+                paramObject.put("mobile_no", et_phone.getText().toString());
+                paramObject.put("password", et_password.getText().toString());
+                paramObject.put("user_id", userId);
+
+                mApiService.loginUser(paramObject.toString()).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull retrofit2.Response<ResponseBody> response) {
+                        Common.dismissProgress();
+                        if (response.isSuccessful()) {
+                            try {
+                                ResponseBody mUser = response.body();
+                                String mResponse = mUser != null ? mUser.string() : null;
+
+                                JSONObject object = new JSONObject(mResponse);
+                                boolean status = object.getBoolean("status");
+                                if (status) {
+                                    JSONObject dataObject = object.getJSONObject("data");
+                                    User userModel = new User();
+                                    userModel.setUserId(dataObject.getInt("id"));
+                                    userModel.setStatus(dataObject.getInt("status"));
+                                    userModel.setMobileNo(dataObject.getString("mobile_no"));
+                                    if (userModel.getStatus() == 0) {
+                                        SnackBar.makeShort(context, getString(R.string.not_register));
+                                    } else if (userModel.getStatus() == 1) {
+                                        PrefUtil.putstringPref(getString(R.string.pref_user_id), String.valueOf(userModel.getUserId()), context);
+                                        PrefUtil.putstringPref(getString(R.string.pref_phone), userModel.getMobileNo(), context);
+                                        PrefUtil.putbooleanPref(getString(R.string.pref_is_login), true, context);
+                                        if (isOther) {
+                                            onBackPressed();
+                                        } else {
+                                            startActivity(new Intent(context, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                                        }
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            if (response.code() == 401) {
+                                try {
+                                    ResponseBody mUser = response.errorBody();
+                                    String mResponse = mUser != null ? mUser.string() : null;
+
+                                    JSONObject obj = new JSONObject(mResponse);
+                                    boolean success = obj.getBoolean("success");
+                                    String message = obj.getString("message");
+                                    if (!success) {
+                                        SnackBar.makeShort(context, message);
+//                                        SnackBar.makeShort(context, getString(R.string.not_register));
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                _callApiLogin();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                        Common.dismissProgress();
+                        SnackBar.makeShort(context, getString(R.string.error_something_wrong));
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Common.dismissProgress();
+        }
+    }
+        
+        
+        
+        
+        
+        
+        
+        
