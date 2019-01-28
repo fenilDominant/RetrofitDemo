@@ -1,8 +1,14 @@
 implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+
 implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
+
+*****************************************************************************************************
+
 implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+
 implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
 implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
 
 
@@ -32,10 +38,15 @@ public interface ApiInterface {
     @POST("register.php")
     Call<ResponseBody> registerUser(@Body RequestBody body);
     
+    ******************************************************************************
     
     @Headers("Content-Type: application/json")
     @POST("register")
     Call<ResponseBody> registerUser(@Body String body);
+    
+    @Headers("Content-Type: application/json")
+    @POST("login")
+    Call<ResponseBody> loginUser(@Body String body);
     
  }
 
