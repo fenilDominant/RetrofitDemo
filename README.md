@@ -225,7 +225,83 @@ mApiService = ApiClient.getRetrofitClient(SplashActivity.this).create(ApiInterfa
     }
         
         
-        
+     *******************************************************************************************
+     
+     private void _callApiSignUp() {
+        try {
+            Common.showProgress(context, "Please wait");
+
+            if (mApiService != null) {
+
+                JSONObject paramObject = new JSONObject();
+                paramObject.put("mobile_no", et_phone.getText().toString());
+
+                mApiService.registerUser(paramObject.toString()).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull retrofit2.Response<ResponseBody> response) {
+                        Common.dismissProgress();
+                        if (response.isSuccessful()) {
+                            try {
+                                ResponseBody mUser = response.body();
+                                String mResponse = mUser != null ? mUser.string() : null;
+
+                                JSONObject object = new JSONObject(mResponse);
+                                boolean status = object.getBoolean("status");
+                                String message = object.getString("message");
+                                if (status) {
+                                    JSONObject dataObject = object.getJSONObject("data");
+                                    User userModel = new User();
+                                    userModel.setUserId(dataObject.getInt("id"));
+                                    userModel.setOtp(dataObject.getString("request_otp"));//todo remove line
+                                    userModel.setStatus(dataObject.getInt("status"));
+                                    userModel.setMobileNo(dataObject.getString("mobile_no"));
+                                    Toast.makeText(context, "OTP: " + userModel.getOtp(), Toast.LENGTH_SHORT).show();//todo
+
+                                    if (userModel.getStatus() == 0) {
+                                        startActivity(new Intent(context, OtpActivity.class).putExtra(getString(R.string.intent_isSignUp), true).putExtra(getString(R.string.intent_user_model), userModel).putExtra(getString(R.string.intent_isOther), isOther));
+                                    } else if (userModel.getStatus() == 1) {
+                                        SnackBar.makeShort(context, getString(R.string.already_register));
+                                    }
+                                } else {
+                                    SnackBar.makeShort(context, message);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            if (response.code() == 401) {
+                                try {
+                                    ResponseBody mUser = response.errorBody();
+                                    String mResponse = mUser != null ? mUser.string() : null;
+
+                                    JSONObject obj = new JSONObject(mResponse);
+                                    JSONObject msgObject = obj.getJSONObject("message");
+                                    JSONArray array = msgObject.getJSONArray("mobile_no");
+                                    for (int i = 0; i < array.length(); i++) {
+                                        String message = array.getString(i);
+                                        SnackBar.makeShort(context, message);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                _callApiSignUp();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                        Common.dismissProgress();
+                        SnackBar.makeShort(context, getString(R.string.error_something_wrong));
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Common.dismissProgress();
+        }
+    }
         
         
         
