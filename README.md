@@ -4,7 +4,7 @@ implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
 public class ApiClient {
 
-    private static String BASE_URL = "";
+    private static String BASE_URL = "http://services.i2i.live/1.3/";
     private static Retrofit retrofit = null;
 
     public static Retrofit getRetrofitClient(Context context) {
