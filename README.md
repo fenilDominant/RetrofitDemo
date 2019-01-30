@@ -57,6 +57,13 @@ mApiService = ApiClient.getRetrofitClient(SplashActivity.this).create(ApiInterfa
 
 *****************************************************************************************************************
 
+ResponseBody mUser = response.body();
+                                String mResponse = mUser != null ? mUser.string() : null;
+
+                                JSONObject object = new JSONObject(mResponse);
+
+
+*****************************************************************************************************
     if (mApiService != null && !TextUtils.isEmpty(mImei) && !TextUtils.isEmpty(mFcmToken)) {
 
             RequestBody requestBody = new MultipartBody.Builder()
