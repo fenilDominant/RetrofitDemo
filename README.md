@@ -1,3 +1,10 @@
+Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+                    startActivity(Intent.createChooser(intent, "Share via"));
+
+
 Download click2surat application and save upto 35% of your annual expenses. Android :https://play.google.com/store/apps/details?id=com.coupon.click2surat
 
 
