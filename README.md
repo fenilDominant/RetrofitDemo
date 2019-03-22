@@ -1,3 +1,6 @@
+Download click2surat application and save upto 35% of your annual expenses. Android :https://play.google.com/store/apps/details?id=com.coupon.click2surat
+
+
 implementation 'com.squareup.retrofit2:retrofit:2.3.0'
 
 implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
